@@ -20,7 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o+ievi$hx6rhja3nbl4*v$#vmx*z+0a$n1ac9-l#_*rky!_5ul'
+# run the following command in terminal to generate a new one
+# ./manage.py shell -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -55,7 +57,9 @@ ROOT_URLCONF = 'mfa_mirror.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'), # to add mfa-mirror/mfa_mirror/templates to template directory
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

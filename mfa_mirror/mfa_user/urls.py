@@ -1,5 +1,5 @@
 from django.urls import path, include
-from . import views
+from mfa_user import views
 
 urlpatterns = [
     path('register/', views.register),

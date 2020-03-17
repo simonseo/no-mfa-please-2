@@ -1,0 +1,20 @@
+{
+    'response': {
+        'akey': '4Z0RXIAV5ODATQFAJVKZ',
+        'customer_name': 'New York University',
+        'force_disable_analytics': False,
+        'has_backup_restore': True,
+        'has_bluetooth_approve': False,
+        'has_trusted_endpoints': False,
+        'has_trusted_endpoints_permission_flow': False,
+        'hotp_secret': '9e921a009250b0d3ebf3f43312246e1f',
+        'instant_restore_status': 'enabled_without_key',
+        'pkey': 'DZUKDPFA84PB9V6HX6I',
+        'reactivation_token': '31debbcc643011ff899982268dce767a',
+        'requires_fips_android': False,
+        'requires_mdm': 0,
+        'security_checkup_enabled': False,
+        'urg_secret': '8698acdf91f8ba8accc79111cb47f6e8'
+    },
+    'stat': 'OK'
+}

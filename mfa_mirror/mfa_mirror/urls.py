@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# if route string is empty like below, it adds urls to the root
+# path('', include('mfa_user.urls')), 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('mfa_user.urls')),
