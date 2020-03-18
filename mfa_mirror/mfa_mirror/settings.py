@@ -130,7 +130,7 @@ STATICFILES_DIRS = [
 
 # Session protection from man-in-the-middle or XSS attacks
 # explanation: https://stackoverflow.com/a/28072319/6501783
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = True
-SECURE_SSL_REDIRECT = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_HTTPONLY = True
+# SECURE_SSL_REDIRECT = True

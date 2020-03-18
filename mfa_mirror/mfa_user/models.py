@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class mfa_user(models.Model):
+class MFAUser(models.Model):
     """Model definition for user."""
     email = models.EmailField(max_length=254, verbose_name='User Email Address', unique=True)
     password = models.CharField(max_length=254, verbose_name='Hashed User Password')

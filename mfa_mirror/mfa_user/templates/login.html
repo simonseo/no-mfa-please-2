@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Login{% endblock title %}
+
+
+{% block content %}
+<header class="row mt-5">
+    <h1 class="col text-center">Log in</h1>
+</header>
+<p class="row">
+    <ul>
+        {% if error %}
+        <li>{{ error.message }}</li>
+        {% elif success %}
+        <li>{{ success.message }}</li>
+        {% endif %}
+    </ul>
+</p>
+<article class="row justify-content-center">
+    <form class="col-lg-8" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="user-email">Email address</label>
+            <input type="email" class="form-control" id="user-email" name="user-email" aria-describedby="email-help">
+        </div>
+        <div class="form-group">
+            <label for="user-password">Password</label>
+            <input type="password" class="form-control" id="user-password" name="user-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+    </form>
+</article>
+{% endblock content %}

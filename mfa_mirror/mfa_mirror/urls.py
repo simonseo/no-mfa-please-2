@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from mfa_user.views import home
 
 # if route string is empty like below, it adds urls to the root
 # path('', include('mfa_user.urls')), 
 urlpatterns = [
+    path('', home),
     path('admin/', admin.site.urls),
     path('user/', include('mfa_user.urls')),
 ]

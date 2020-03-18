@@ -1,10 +1,10 @@
 from django.contrib import admin
-from mfa_user.models import mfa_user
+from mfa_user.models import MFAUser
 
 # Register your models here.
-@admin.register(mfa_user)
+@admin.register(MFAUser)
 class MFAUserAdmin(admin.ModelAdmin):
-    '''Admin View for mfa_user'''
+    '''Admin View for MFAUser'''
 
     list_display = ('email','password','hotp_secret', 'register_dttm')
     # list_filter = ('password',)
