@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from django.conf import settings
-from mfa_user.models import MFAUser
 from collections import defaultdict
+from mfa_user.models import MFAUser
 from mfa_user.duo import activate, generate_hotp, encrypt
+from mfa_user.forms import LoginForm
 
 recursive_defaultdict = lambda: defaultdict(recursive_defaultdict)
 
@@ -54,27 +55,17 @@ def login(request: HttpRequest):
         if user_id:
             return redirect('/')
         else:
-            return render(request, 'login.html')
+            form = LoginForm()
+            return render(request, 'login.html', {'form':form})
+
     elif request.method == 'POST':
-        email = request.POST.get('user-email')
-        password = request.POST.get('user-password')
-
-        if not (email and password):
-            context['error']['message'] = "Fill in all fields!"
-        else:
-            try:
-                mfa_user = MFAUser.objects.get(email=email)
-            except MFAUser.DoesNotExist:
-                context['error']['message'] = "Email does not exist"
-            else:
-                if not check_password(password, mfa_user.password):
-                    context['error']['message'] = "Password is incorrect"
-
-        if context['error']:
-            return render(request, 'login.html', context)
-        else:
-            request.session['user_id'] = mfa_user.id
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # TODO it's kinda weird that the form gives user_id. change it.
+            request.session['user_id'] = form.user_id 
             return redirect('/')
+        else:
+            return render(request, 'login.html', {'form':form})
 
 def logout(request: HttpRequest):
     del request.session['user_id']
