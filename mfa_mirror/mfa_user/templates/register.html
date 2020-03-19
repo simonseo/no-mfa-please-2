@@ -1,50 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'form.html' %}
 
 
 {% block title %}Register{% endblock title %}
 
 
-{% block content %}
-<header class="row mt-5">
-    <h1 class="col text-center">Register Account</h1>
-</header>
-<p class="row">
-    <ul>
-        {% if error %}
-        <li>{{ error.message }}</li>
-        {% elif success %}
-        <li>{{ success.message }}</li>
-        {% endif %}
-    </ul>
-</p>
-<article class="row justify-content-center">
-    <form class="col-lg-8" method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="user-email">Email address</label>
-            <input type="email" class="form-control" id="user-email" name="user-email" aria-describedby="email-help">
-            <small id="email-help" class="form-text text-muted"><a href="#">Use an email that's not the one you
-                    need MFA for.</a></small>
-        </div>
-        <div class="form-group">
-            <label for="user-password">Password</label>
-            <input type="password" class="form-control" id="user-password" name="user-password">
-        </div>
-        <div class="form-group">
-            <label for="user-re-password">Re-enter Password</label>
-            <input type="password" class="form-control" id="user-re-password" name="user-re-password">
-        </div>
-        <div class="form-group">
-            <label for="user-qr-url">Duo MFA QR Code Image URL</label>
-            <input type="url" class="form-control" id="user-qr-url" name="user-qr-url" aria-describedby="qr-url-help">
-            <small id="qr-url-help" class="form-text text-muted"><a href="#">How to get this
-                    information</a></small>
-        </div>
-        <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</article>
-{% endblock content %}
+{% block h1 %}
+Register MFA Mirror Account
+{% endblock h1 %}
+    
+

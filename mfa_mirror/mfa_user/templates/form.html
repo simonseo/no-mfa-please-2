@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+<!-- {% block title %}
+Login
+{% endblock title %} -->
+
+{% block content %}
+<header class="row mt-5">
+    <h1 class="col text-center">
+        {% block h1 %}{% endblock h1 %}
+    </h1>
+</header>
+<article class="row justify-content-center">
+    <form class="col-lg-8" method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            <input {% if field.value %} value="{{ field.value }}" {% endif %} type="{{ field.field.widget.input_type }}"
+                class="form-control {% if field.errors %}is-invalid{% endif %}" name="{{ field.name }}"
+                id="{{ field.id_for_label }}" {% if field.required %}required{% endif %}>
+            {% if field.help_text %}
+            <small id="{{ field.name }}-help" class="form-text text-muted">
+                {% if field.help_text.url %}
+                <a href="{{ field.help_text.url }}" target="_blank">{{ field.help_text.message }}</a>
+                {% else %}
+                {{ field.help_text.message }}
+                {% endif %}
+            </small>
+            {% endif %}
+
+            {% if field.errors %}
+            {{ field.errors }}
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">{{ form.submit_button_label }}</button>
+    </form>
+</article>
+{% endblock content %}

@@ -1,27 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'form.html' %}
 
-{% block title %}Login{% endblock title %}
+{% block title %}
+Login Page | Fuck MFA
+{% endblock title %}
 
-{% block content %}
-<header class="row mt-5">
-    <h1 class="col text-center">Log in</h1>
-</header>
-<article class="row justify-content-center">
-    <form class="col-lg-8" method="POST">
-        {% csrf_token %}
-
-        {% for field in form %}
-        <div class="form-group">
-            {{ field.label_tag }}
-            <input type="{{ field.field.widget.input_type }}" class="form-control" id="{{ field.id_for_label }}"
-                name="{{ field.name }}" {% if field.value %} value="{{  field.value }}" {% endif %}>
-            {% if field.errors %}
-            {{ field.errors }}
-            {% endif %}
-        </div>
-        {% endfor %}
-
-        <button type="submit" class="btn btn-primary">Log in</button>
-    </form>
-</article>
-{% endblock content %}
+{% block h1 %}
+Log in
+{% endblock h1 %}

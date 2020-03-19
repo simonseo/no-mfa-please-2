@@ -21,7 +21,8 @@ def register(request: HttpRequest):
     context = recursive_defaultdict()
 
     if request.method == 'GET':
-        return render(request, 'register.html')
+        form = RegisterForm()
+        return render(request, 'register.html', {'form':form})
     elif request.method == 'POST':
         email = request.POST.get('user-email', None)
         password = request.POST.get('user-password', None)
