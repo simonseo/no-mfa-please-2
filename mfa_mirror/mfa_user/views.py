@@ -23,7 +23,9 @@ def register(request: HttpRequest):
     elif request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            return redirect(request, 'login.html', {'form': LoginForm()})
+            context['popup']['message'] = "Registration Successful! Check your email!"
+            return redirect('/user/login', context)
+            # return redirect(request, 'login.html', {'form': LoginForm()})
         # TODO Allow three types of input: QR URL, Content of QR Code, QR Code image (which might be downloaded or photographed)
         return render(request, 'register.html', {'form':form})
 

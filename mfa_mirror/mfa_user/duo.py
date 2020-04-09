@@ -59,9 +59,14 @@ def _request_activate(activation_url):
 	else:
 		return hotp_secret
 
-def activate(qr_url: str) -> str:
+def activate(qr_url: str=None, payload: str=None) -> str:
 	'''Activates a new HOTP Key'''
-	payload = _get_payload(qr_url) # getting payload can be done in other ways
+	if not qr_url and not payload:
+		raise Exception("Expected either QR URL or Payload. Received none.")
+	
+	if not payload:
+		payload = _get_payload(qr_url) # getting payload can be done in other ways
+
 	activation_url = _get_activation_url(payload)
 	if settings.DEBUG:
 		print(activation_url)

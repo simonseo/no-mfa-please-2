@@ -19,10 +19,15 @@ class RegisterForm(forms.Form):
         label="Re-enter Password", required=True, widget=forms.PasswordInput)
     qr_url = forms.URLField(label='Duo MFA QR Code Image URL', required=False, help_text={
                             'placeholder': 'api-1234.duosecurity.com/frame/qr?value=SomeValue123',
-                            'message': 'How to get this information', 
-                            'url': '#'})
-    # qr_content = forms.CharField(label='Decoded Content of QR Code', required=False)
-    # qr_image = forms.FileField(label='QR Code Image', allow_empty_file=True, required=False)
+                            'message': 'Right-click or long press the QR code. Choose "Copy Image Address"', 
+                            'url': '#'
+                            })
+    qr_content = forms.CharField(label='Decoded Content of QR Code', required=False, help_text={
+                                'placeholder': 'VeryLongText-MoreLongText',
+                                'message': 'Click "Email me an activation link instead." OR scan the QR code with your smartphone camera app.', 
+                                'url': '#'
+                                })
+    # qr_image = forms.FileField(label='QR Code Image', allow_empty_file=False, required=False)
     submit_button_label = 'Register'
 
     def clean_email(self):
@@ -56,11 +61,13 @@ class RegisterForm(forms.Form):
     def clean_qr_url(self):
         qr_url = self.cleaned_data.get('qr_url')
         if not qr_url:
-            raise forms.ValidationError('Could not read URL of QR code image.')
+            # raise forms.ValidationError('Could not read URL of QR code image.')
+            print(type(qr_url))
+            return qr_url
 
         # Make sure hotp registration worked
         try:
-            self.hotp_secret = duo.activate(qr_url)
+            self.hotp_secret = duo.activate(qr_url=qr_url)
         except Exception as e:
             if settings.DEBUG:
                 print(e)
@@ -68,14 +75,36 @@ class RegisterForm(forms.Form):
                 'Failed to activate Duo MFA from the QR code URL. {}'.format(e))
         return qr_url
 
+    def clean_qr_content(self):
+        qr_content = self.cleaned_data.get('qr_content')
+        if not qr_content:
+            return qr_content
+        
+        # Make sure hotp registration worked
+        try:
+            self.hotp_secret = duo.activate(payload=qr_content)
+        except Exception as e:
+            if settings.DEBUG:
+                print(e)
+            raise forms.ValidationError(
+                'Failed to activate Duo MFA from the Payload. {}'.format(e))
+        return qr_content
+
+
     def clean(self):
         '''Validate RegisterForm'''
-        return super().clean()
+        super().clean()
         # TODO Allow three types of input: QR URL, Content of QR Code, QR Code image (which might be downloaded or photographed)
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
         re_password = self.cleaned_data.get('re_password')
         qr_url = self.cleaned_data.get('qr_url')
+        qr_content = self.cleaned_data.get('qr_content')
+
+        if not qr_url and not qr_content:
+            self.add_error('qr_url', forms.ValidationError('Either provide URL of QR code or Activation Code.'))
+            self.add_error('qr_content', forms.ValidationError('Either provide URL of QR code or Activation Code.'))
+            return
 
         encrypted_secret = duo.encrypt(
             self.hotp_secret, password, settings.SECRET_KEY)
@@ -93,23 +122,22 @@ class LoginForm(forms.Form):
                              })
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput,
                                help_text={
-                                   'message': 'the best way to construct a good password!',
-                                   'url': 'https://naver.com',
+                                   'message': 'Password should be at least 6 characters long.',
                                })
-    password.help_url = 'https://naver.com'  # this attribute cannot be read from
+    # password.help_url = 'https://naver.com'  # this attribute cannot be read from
     submit_button_label = 'Log in'
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not email:
-            raise forms.ValidationError('Could not read email address.')
-        return email
+    # def clean_email(self):
+    #     email = self.cleaned_data.get('email')
+    #     if not email:
+    #         raise forms.ValidationError('Could not read email address.')
+    #     return email
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if not password:
-            raise forms.ValidationError('Could not read password.')
-        return password
+    # def clean_password(self):
+    #     password = self.cleaned_data.get('password')
+    #     if not password:
+    #         raise forms.ValidationError('Could not read password.')
+    #     return password
 
     def clean(self):
         '''Validate LoginForm'''
@@ -117,6 +145,9 @@ class LoginForm(forms.Form):
 
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
+        
+        if not email or not password:
+            return
 
         # Email registered validation
         try:
