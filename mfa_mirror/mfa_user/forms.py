@@ -112,8 +112,9 @@ class RegisterForm(forms.Form):
             self.hotp_secret, password, settings.SECRET_KEY)
 
         new_user = MFAUser(email=email, password=make_password(
-            password), hotp_secret=encrypted_secret)
+            password), hotp_secret=encrypted_secret) #, is_confirmed=False)
         new_user.save()
+        self.user = new_user
 
 
 class LoginForm(forms.Form):
@@ -205,11 +206,13 @@ class GenerateOtpForm(forms.Form):
                 print('Email does not exist on system.')
             self.add_error('email', forms.ValidationError(
                 'Email does not exist on system.'))
+            return
         except Exception as e:
             if settings.DEBUG:
-                print('Unknown error while retrieving user information.')
+                print(f'Unknown error while retrieving user information. {e}')
             raise forms.ValidationError(
                 'Unknown error while retrieving user information.')
+            return
 
         # Password validation
         if not check_password(password, mfa_user.password):
@@ -217,9 +220,11 @@ class GenerateOtpForm(forms.Form):
                 print('Wrong password Entered.')
             self.add_error('password', forms.ValidationError(
                 'Wrong password Entered.'))
-        elif not mfa_user.is_activated:
-            self.add_error('password', forms.ValidationError(
-                'Wrong password Entered.'))
-
-        else:
+        
+        # Confirmation check
+        if not mfa_user.is_confirmed:
+            raise forms.ValidationError('Account is not confirmed yet. Check your inbox first.')
+        
+        if not self.errors:
+            self.email = mfa_user.email
             self.user_id = mfa_user.id

@@ -7,5 +7,7 @@ urlpatterns = [
     path('login/', views.login),
     path('logout/', views.logout),
     path('generate/', views.generate),
-    url(r'confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.confirm), # change confirmation route to modern pattern
+    # change confirmation route to modern pattern
+    url(r'confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.confirm, name='email-confirmation'),
 ]
