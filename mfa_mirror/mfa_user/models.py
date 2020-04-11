@@ -6,7 +6,8 @@ class MFAUser(models.Model):
     password = models.CharField(max_length=254, verbose_name='Hashed User Password')
     hotp_secret = models.CharField(max_length=254, verbose_name='Hashed HOTP Secret')
     register_dttm = models.DateTimeField(auto_now_add=True, verbose_name='Timestamp of Registration')
-
+    is_confirmed = models.BooleanField(verbose_name="Whether Account is Confirmed", default=False)
+    
     class Meta:
         """Meta definition for user."""
         db_table = 'mfa_users'

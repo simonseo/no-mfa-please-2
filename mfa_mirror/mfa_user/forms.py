@@ -8,9 +8,10 @@ from mfa_user import duo
 
 class RegisterForm(forms.Form):
     """RegisterForm definition."""
-    email = forms.EmailField(label="Email address", required=True, 
-                                error_messages={'required': 'Better give me your email!'}, 
-                                help_text={'placeholder': 'example@company.com'})
+    email = forms.EmailField(label="Email address", required=True,
+                             error_messages={
+                                 'required': 'Better give me your email!'},
+                             help_text={'placeholder': 'example@company.com'})
     password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput,
                                help_text={
                                    'message': 'Password should be at least 6 characters long.',
@@ -19,14 +20,14 @@ class RegisterForm(forms.Form):
         label="Re-enter Password", required=True, widget=forms.PasswordInput)
     qr_url = forms.URLField(label='Duo MFA QR Code Image URL', required=False, help_text={
                             'placeholder': 'api-1234.duosecurity.com/frame/qr?value=SomeValue123',
-                            'message': 'Right-click or long press the QR code. Choose "Copy Image Address"', 
+                            'message': 'Right-click or long press the QR code. Choose "Copy Image Address"',
                             'url': '#'
                             })
     qr_content = forms.CharField(label='Decoded Content of QR Code', required=False, help_text={
-                                'placeholder': 'VeryLongText-MoreLongText',
-                                'message': 'Click "Email me an activation link instead." OR scan the QR code with your smartphone camera app.', 
-                                'url': '#'
-                                })
+        'placeholder': 'VeryLongText-MoreLongText',
+        'message': 'Click "Email me an activation link instead." OR scan the QR code with your smartphone camera app.',
+        'url': '#'
+    })
     # qr_image = forms.FileField(label='QR Code Image', allow_empty_file=False, required=False)
     submit_button_label = 'Register'
 
@@ -79,7 +80,7 @@ class RegisterForm(forms.Form):
         qr_content = self.cleaned_data.get('qr_content')
         if not qr_content:
             return qr_content
-        
+
         # Make sure hotp registration worked
         try:
             self.hotp_secret = duo.activate(payload=qr_content)
@@ -89,7 +90,6 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError(
                 'Failed to activate Duo MFA from the Payload. {}'.format(e))
         return qr_content
-
 
     def clean(self):
         '''Validate RegisterForm'''
@@ -102,8 +102,10 @@ class RegisterForm(forms.Form):
         qr_content = self.cleaned_data.get('qr_content')
 
         if not qr_url and not qr_content:
-            self.add_error('qr_url', forms.ValidationError('Either provide URL of QR code or Activation Code.'))
-            self.add_error('qr_content', forms.ValidationError('Either provide URL of QR code or Activation Code.'))
+            self.add_error('qr_url', forms.ValidationError(
+                'Either provide URL of QR code or Activation Code.'))
+            self.add_error('qr_content', forms.ValidationError(
+                'Either provide URL of QR code or Activation Code.'))
             return
 
         encrypted_secret = duo.encrypt(
@@ -145,7 +147,7 @@ class LoginForm(forms.Form):
 
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
-        
+
         if not email or not password:
             return
 
@@ -166,5 +168,58 @@ class LoginForm(forms.Form):
                 print('Wrong password Entered.')
                 self.add_error('password', forms.ValidationError(
                     'Wrong password Entered.'))
+            # elif :
+                # TODO Check if account has been confirmed
+
             else:
                 self.user_id = mfa_user.id
+
+
+class GenerateOtpForm(forms.Form):
+    """GenerateOtpForm definition."""
+
+    email = forms.EmailField(label="Email address", required=True, error_messages={
+                             'required': 'Better give me your email!',
+                             })
+    password = forms.CharField(label="Password", required=True, widget=forms.PasswordInput,
+                               help_text={
+                                   'message': 'Password should be at least 6 characters long.',
+                               })
+    submit_button_label = 'Generate'
+
+    def clean(self):
+        '''Validate LoginForm'''
+        super().clean()
+
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        if not email or not password:
+            return
+
+        # Existence validation
+        try:
+            mfa_user = MFAUser.objects.get(email=email)
+        except MFAUser.DoesNotExist:
+            if settings.DEBUG:
+                print('Email does not exist on system.')
+            self.add_error('email', forms.ValidationError(
+                'Email does not exist on system.'))
+        except Exception as e:
+            if settings.DEBUG:
+                print('Unknown error while retrieving user information.')
+            raise forms.ValidationError(
+                'Unknown error while retrieving user information.')
+
+        # Password validation
+        if not check_password(password, mfa_user.password):
+            if settings.DEBUG:
+                print('Wrong password Entered.')
+            self.add_error('password', forms.ValidationError(
+                'Wrong password Entered.'))
+        elif not mfa_user.is_activated:
+            self.add_error('password', forms.ValidationError(
+                'Wrong password Entered.'))
+
+        else:
+            self.user_id = mfa_user.id

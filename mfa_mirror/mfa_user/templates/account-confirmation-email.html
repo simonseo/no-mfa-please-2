@@ -1,0 +1,7 @@
+{% autoescape off %}
+Welcome,
+
+Please click on the link below to confirm your registration.
+
+https://{{ domain }}{% url 'mfa_user.views.confirm' uidb64=uid token=token %}
+{% endautoescape %}
