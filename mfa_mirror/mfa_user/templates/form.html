@@ -14,10 +14,16 @@ Login
     <form class="col-lg-8" method="POST">
         {% csrf_token %}
 
-        {{ form.non_field_errors }}
-        <!-- {% for error in form.non_field_errors %}
-        {{error}}
-        {% endfor %}     -->
+        
+        <!-- {{ form.non_field_errors }} -->
+        {% if form.non_field_errors %}
+        <p class="alert alert-danger" role="alert">
+            {% for error in form.non_field_errors %}
+                    {{error}}
+            {% endfor %}    
+        </p>
+        {% endif %}
+            
 
         {% for field in form %}
         <div class="form-group">

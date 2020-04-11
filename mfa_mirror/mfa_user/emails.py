@@ -14,10 +14,13 @@ def create_confirmation_email(domain, user):
         'uid': urlsafe_base64_encode(force_bytes(user.email)),
         'token': account_confirmation_token.make_token(user),
     })
+    from_email = f'no-reply@{domain}'
+    if settings.DEBUG:
+        from_email = 'no-reply@mfa.com'
     to_email = user.email
 
     email = EmailMessage(
-        mail_subject, message, to=[to_email]
+        mail_subject, message, from_email=from_email, to=[to_email]
     )
     if settings.DEBUG:
         print(f'email.body={email.body}')

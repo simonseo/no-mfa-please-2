@@ -73,8 +73,10 @@ def generate(request: HttpRequest):
         form = GenerateOtpForm(request.POST)
         if form.is_valid():
             mfa_user = MFAUser.objects.get(pk=form.user_id)
-            # send email
-            # show popup saying otp was sent to email
+            # TODO decrypt otp key using user password and server secret key
+            # TODO generate otp and increment counter
+            # TODO send email with otp
+            # TODO show popup saying otp was sent to email
             return HttpResponse('hotp should be sent to your email!')
         else:
             return render(request, 'generate.html', {'form':form})
@@ -89,10 +91,10 @@ def confirm(request, uidb64, token):
     if user is None:
         return HttpResponse('User account does not exist. Try registering again.')
     elif account_confirmation_token.check_token(user, token):
-        return HttpResponse('Confirmation link is invalid!')
-    else:
-        user.is_active = True
+        user.is_confirmed = True
         user.save()
         # login(request, user)
         # return redirect('home')
         return HttpResponse('Thank you for your email confirmation. Now you can safely closet this tab and generate OTPs.')
+    else:
+        return HttpResponse('Confirmation link is invalid!')

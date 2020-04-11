@@ -40,6 +40,8 @@ class RegisterForm(forms.Form):
         except MFAUser.DoesNotExist:
             return email
         else:
+            if settings.DEBUG:
+                print("Email already exists!")
             raise forms.ValidationError('Email address already exists!')
 
     def clean_password(self):
@@ -54,7 +56,7 @@ class RegisterForm(forms.Form):
         if not re_password:
             raise forms.ValidationError(
                 'Could not read re-entered password.')
-        if password != re_password:
+        if password != re_password and not self.errors.get('password'):
             raise forms.ValidationError('Passwords don\'t match!')
 
         return re_password
@@ -72,8 +74,8 @@ class RegisterForm(forms.Form):
         except Exception as e:
             if settings.DEBUG:
                 print(e)
-            raise forms.ValidationError(
-                'Failed to activate Duo MFA from the QR code URL. {}'.format(e))
+                raise forms.ValidationError('Failed to activate Duo MFA from the QR code URL. {}'.format(e))
+            raise forms.ValidationError('Failed to activate Duo MFA from the QR code URL.')
         return qr_url
 
     def clean_qr_content(self):
@@ -87,8 +89,8 @@ class RegisterForm(forms.Form):
         except Exception as e:
             if settings.DEBUG:
                 print(e)
-            raise forms.ValidationError(
-                'Failed to activate Duo MFA from the Payload. {}'.format(e))
+                raise forms.ValidationError('Failed to activate Duo MFA using the given value. {}'.format(e))
+            raise forms.ValidationError('Failed to activate Duo MFA using the given value.')
         return qr_content
 
     def clean(self):
@@ -102,17 +104,21 @@ class RegisterForm(forms.Form):
         qr_content = self.cleaned_data.get('qr_content')
 
         if not qr_url and not qr_content:
-            self.add_error('qr_url', forms.ValidationError(
-                'Either provide URL of QR code or Activation Code.'))
-            self.add_error('qr_content', forms.ValidationError(
-                'Either provide URL of QR code or Activation Code.'))
+            for field in 'qr_url', 'qr_content':
+                self.add_error(field, forms.ValidationError('Either provide a proper URL of QR code or Activation Code.'))
             return
 
+        if self.errors:
+            return
+
+        # TODO Move the below functionality to a separate module
         encrypted_secret = duo.encrypt(
             self.hotp_secret, password, settings.SECRET_KEY)
 
         new_user = MFAUser(email=email, password=make_password(
             password), hotp_secret=encrypted_secret) #, is_confirmed=False)
+        if settings.DEBUG:
+            print(email, password, re_password, qr_url, qr_content)
         new_user.save()
         self.user = new_user
 
