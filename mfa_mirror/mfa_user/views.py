@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from mfa_user.models import MFAUser
 from mfa_user.forms import LoginForm, RegisterForm, GenerateOtpForm
-from mfa_user.emails import create_confirmation_email
+from mfa_user.emails import create_confirmation_email, create_otp_generation_email
 from mfa_user.tokens import account_confirmation_token
 
 recursive_defaultdict = lambda: defaultdict(recursive_defaultdict)
@@ -72,10 +72,11 @@ def generate(request: HttpRequest):
     elif request.method == 'POST':
         form = GenerateOtpForm(request.POST)
         if form.is_valid():
-            mfa_user = MFAUser.objects.get(pk=form.user_id)
-            # TODO decrypt otp key using user password and server secret key
-            # TODO generate otp and increment counter
-            # TODO send email with otp
+            # send email with otp
+            domain = get_current_site(request).domain
+            email = create_otp_generation_email(domain, form.user, form.otp_list)
+            email.content_subtype = "html"
+            email.send()
             # TODO show popup saying otp was sent to email
             return HttpResponse('hotp should be sent to your email!')
         else:

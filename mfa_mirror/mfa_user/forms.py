@@ -231,6 +231,19 @@ class GenerateOtpForm(forms.Form):
         if not mfa_user.is_confirmed:
             raise forms.ValidationError('Account is not confirmed yet. Check your inbox first.')
         
-        if not self.errors:
-            self.email = mfa_user.email
-            self.user_id = mfa_user.id
+        if self.errors:
+            return
+
+        # TODO Move following functionality to separate module
+        # decrypt otp key using user password and server secret key
+        # generate otp and increment counter
+        hotp_secret = duo.decrypt(mfa_user.hotp_secret, password, settings.SECRET_KEY)
+        n = 1
+        otp_list = duo.generate_hotp(hotp_secret, current_at=mfa_user.hotp_count, n=n)
+        mfa_user.hotp_count += n
+        mfa_user.save()
+        self.user = mfa_user
+        self.otp_list = otp_list
+
+        if settings.DEBUG:
+            print(f'otp_list={otp_list}')

@@ -1,0 +1,40 @@
+<p>
+    Dear user,
+</p>
+
+<p>
+    Here are your new passcodes. Please do not expose them to other people.
+</p>
+
+
+<h2>
+    Detailed Instructions
+</h2>
+<ol>
+    <li>Click on 'Enter a Passcode' button in the login screen.</li>
+    <li>Input an unused passcode from the list, starting at the top.</li>
+    <li>You cannot re-use passcodes.</li>
+    <li>Any passcodes above the one you use become expired.</li>
+    <li>Any passcodes created before the one you use become expired.</li>
+</ol>
+
+
+<h2>Passcodes</h2>
+<ol>
+{% for otp in otp_list %}
+    <li><em>{{ otp }}</em></li>
+{% endfor %}
+</ol>
+
+<h2>Security Guidelines</h2>
+<ul>
+    <li>Generating one passcode at a time is more secure than generating a lot at once.</li>
+    <li>If you accidentally expose the passcodes to other people, use the last passcode on the list. This will expire all the other passcodes.</li>
+    <li>You can delete your MFA Mirror account <a href="#">here</a></li>
+</ul>
+
+<p>
+    Best,
+    <br>
+    MFA Mirror Team
+</p>

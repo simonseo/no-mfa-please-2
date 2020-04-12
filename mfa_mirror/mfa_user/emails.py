@@ -25,3 +25,20 @@ def create_confirmation_email(domain, user):
     if settings.DEBUG:
         print(f'email.body={email.body}')
     return email
+
+def create_otp_generation_email(domain, user, otp_list):
+    mail_subject = 'Your MFA Passcodes'
+    message = render_to_string('otp-generation-email.html', {
+        'otp_list': otp_list,
+    })
+    from_email = f'no-reply@{domain}'
+    if settings.DEBUG:
+        from_email = 'no-reply@mfa.com'
+    to_email = user.email
+
+    email = EmailMessage(
+        mail_subject, message, from_email=from_email, to=[to_email]
+    )
+    if settings.DEBUG:
+        print(f'email.body={email.body}')
+    return email
