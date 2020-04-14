@@ -19,6 +19,8 @@ def home(request: HttpRequest):
         return HttpResponse(mfa_user.email) 
     return HttpResponse("home page")
 
+def get_started(request: HttpRequest):
+    return render(request, 'pages/get-started.html')
 
 def register(request: HttpRequest):
     context = recursive_defaultdict()

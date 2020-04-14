@@ -1,0 +1,9 @@
+{% if request_path == path  %}
+<li class="nav-item active">
+    <a class="nav-link" href="{{ path }}">{{ text }} <span class="sr-only">(current)</span></a>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ path }}">{{ text }}</a>
+</li>
+{% endif %}

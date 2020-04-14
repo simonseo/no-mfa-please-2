@@ -1,5 +1,7 @@
+{% load navigation_tags %}
+
 <nav class="navbar navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">
+  <a class="navbar-brand" href="/">
     <img src="https://getbootstrap.com/docs/4.4/assets/brand/bootstrap-solid.svg" width="30" height="30"
       alt="MFA Mirror Website Logo">
     MFA Mirror
@@ -10,29 +12,17 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
+  <ul class="navbar-nav mr-auto">
+    {% create_nav_link '/get-started/' 'Get Started' %}
+    {% create_nav_link '/user/register/' 'Register' %}
+    {% create_nav_link '/user/generate/' 'Generate Passcodes' %}
+  </ul>
 
-      {% if request.path == "/user/register/"  %} 
-        <li class="nav-item active">
-          <a class="nav-link" href="/user/register">Register <span class="sr-only">(current)</span></a>
-        </li>
-      {% else %}
-        <li class="nav-item">
-          <a class="nav-link" href="/user/register">Register</a>
-        </li>
-      {% endif %}
-
-        
-      <li class="nav-item">
-        <a class="nav-link" href="/user/generate">Generate Passcodes</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/get-started">Get Started</a>
-      </li>
-      {% comment %} <li class="nav-item active">
+    {% comment %} 
+    <ul>
+      <li class="nav-item active">
         <a class="nav-link" href="/terms">Terms <span class="sr-only">(current)</span></a>
-      </li> {% endcomment %}
-      {% comment %} 
+      </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
@@ -48,11 +38,12 @@
       <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
-      {% endcomment %}
-    </ul>
+    </ul> 
+    {% endcomment %}
+
     {% comment %} <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>  {% endcomment %}
+    </form> {% endcomment %}
   </div>
 </nav>

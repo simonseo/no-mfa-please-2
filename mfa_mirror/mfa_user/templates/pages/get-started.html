@@ -1,0 +1,25 @@
+{% extends '../common/base.html' %}
+
+
+{% block title %}
+Get Started
+{% endblock title %}
+
+
+{% block content %}
+Let's get started!
+
+<p>Follow the <a href="https://github.com/simonseo/no-mfa-please#how-it-works--usage">instructions</a> to register. Ask
+    a local CS student for help. Note that it is impossible to recover or change your password on this site.</p>
+<p>
+    <ol>
+        <li>Log in to <a href="https://start.nyu.edu" rel="nofollow">start.nyu.edu</a></li>
+        <li>Click 'NYU Multi-Factor Authentication Registration &amp; Update'</li>
+        <li>Click 'Add a New Device' in MFA panel</li>
+        <li>Log in with MFA</li>
+        <li>Add a 'Tablet (iPad, Nexus 7, etc.)' (Doesn't matter whether you choose iOS or Android)</li>
+        <li>Click 'I have Duo Mobile installed'. A QR code will show up.</li>
+        <li>Copy the image address (usually in the right click context menu or long press menu</li>
+    </ol>
+</p>
+{% endblock content %}
