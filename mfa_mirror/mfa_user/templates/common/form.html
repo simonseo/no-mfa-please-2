@@ -5,11 +5,7 @@ Login
 {% endblock title %} -->
 
 {% block content %}
-<header class="row mt-5">
-    <h1 class="col text-center">
-        {% block h1 %}{% endblock h1 %}
-    </h1>
-</header>
+
 <article class="row justify-content-center">
     <form class="col-lg-8" method="POST">
         {% csrf_token %}
