@@ -9,7 +9,7 @@ from mfa_user.tokens import account_confirmation_token
 
 def create_confirmation_email(domain, user):
     mail_subject = 'Confirm your account on Duo MFA Online Mirror.'
-    message = render_to_string('account-confirmation-email.html', {
+    message = render_to_string('emails/account-confirmation-email.html', {
         'domain': domain,
         'uid': urlsafe_base64_encode(force_bytes(user.email)),
         'token': account_confirmation_token.make_token(user),
@@ -28,7 +28,7 @@ def create_confirmation_email(domain, user):
 
 def create_otp_generation_email(domain, user, otp_list):
     mail_subject = 'Your MFA Passcodes'
-    message = render_to_string('otp-generation-email.html', {
+    message = render_to_string('emails/otp-generation-email.html', {
         'otp_list': otp_list,
     })
     from_email = f'no-reply@{domain}'

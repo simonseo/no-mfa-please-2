@@ -24,11 +24,15 @@
 </head>
 
 <body>
-
+    {% comment %} Side Navigation bar? {% endcomment %}
+    {% include './navbar.html' %}
     <div class="container">
         {% block content %}
         {% endblock content %}
     </div>
+    {% if modal %}
+    {% include './modal.html' with modal_title=modal.title modal_body=modal.body fade=modal.fade%}
+    {% endif %}
 </body>
 
     

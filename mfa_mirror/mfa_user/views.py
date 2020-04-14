@@ -26,7 +26,7 @@ def register(request: HttpRequest):
     if request.method == 'GET':
         form = RegisterForm()
         # TODO Allow three types of input: QR URL, Content of QR Code, QR Code image (which might be downloaded or photographed)
-        return render(request, 'register.html', {'form':form})
+        return render(request, 'pages/register.html', {'form': form})
     elif request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -34,9 +34,13 @@ def register(request: HttpRequest):
             new_user = form.user
             email = create_confirmation_email(domain, new_user)
             email.send()
-            # TODO Redirect with a popup message
-            return HttpResponse('Please confirm your email address to complete the registration')
-        return render(request, 'register.html', {'form':form})
+            modal = {
+                'title': 'Registration Almost Complete!',
+                'body': 'We sent a confirmation email to your email address. Click the link in the email to complete the registration.',
+                'fade': False,
+            }
+            return render(request, 'pages/register.html', {'form': form, 'modal': modal})
+        return render(request, 'pages/register.html', {'form': form})
 
 
 
@@ -48,7 +52,7 @@ def login(request: HttpRequest):
             return redirect('/')
         else:
             form = LoginForm()
-            return render(request, 'login.html', {'form':form})
+            return render(request, 'pages/login.html', {'form':form})
 
     elif request.method == 'POST':
         form = LoginForm(request.POST)
@@ -57,7 +61,7 @@ def login(request: HttpRequest):
             request.session['user_id'] = form.user_id 
             return redirect('/')
         else:
-            return render(request, 'login.html', {'form':form})
+            return render(request, 'pages/login.html', {'form':form})
 
 def logout(request: HttpRequest):
     del request.session['user_id']
@@ -67,7 +71,7 @@ def generate(request: HttpRequest):
     context = recursive_defaultdict()
     if request.method == 'GET':
         form = GenerateOtpForm()
-        return render(request, 'generate.html', {'form':form})
+        return render(request, 'pages/generate.html', {'form':form})
 
     elif request.method == 'POST':
         form = GenerateOtpForm(request.POST)
@@ -78,10 +82,16 @@ def generate(request: HttpRequest):
             email.content_subtype = "html"
             email.send()
             # TODO show popup saying otp was sent to email
-            return HttpResponse('hotp should be sent to your email!')
+
+            modal = {
+                'title': 'Passcodes Generated',
+                'body': 'Check your inbox! We sent the passcodes to your email. \
+                        Make sure to check the spam folder if the email doesn\'t arrive within a few minutes.',
+                'fade': False,
+            }
+            return render(request, 'pages/generate.html', {'form':GenerateOtpForm(), 'modal':modal})
         else:
-            return render(request, 'generate.html', {'form':form})
-    return HttpResponse('hotp generation page coming soon!')
+            return render(request, 'pages/generate.html', {'form':form})
 
 def confirm(request, uidb64, token):
     try:
@@ -95,7 +105,7 @@ def confirm(request, uidb64, token):
         user.is_confirmed = True
         user.save()
         # login(request, user)
-        # return redirect('home')
-        return HttpResponse('Thank you for your email confirmation. Now you can safely closet this tab and generate OTPs.')
+        # return redirect('/')
+        return HttpResponse('Thank you for your email confirmation. Now you can safely closet this tab and generate OTPs on our website.')
     else:
         return HttpResponse('Confirmation link is invalid!')

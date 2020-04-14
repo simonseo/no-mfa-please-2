@@ -68,6 +68,7 @@ class RegisterForm(forms.Form):
             print(type(qr_url))
             return qr_url
 
+        # TODO delay activation to clean() method. Here, only check that URL is in correct format.
         # Make sure hotp registration worked
         try:
             self.hotp_secret = duo.activate(qr_url=qr_url)
@@ -83,6 +84,7 @@ class RegisterForm(forms.Form):
         if not qr_content:
             return qr_content
 
+        # TODO delay activation to view. Here, only check that the value is in correct format.
         # Make sure hotp registration worked
         try:
             self.hotp_secret = duo.activate(payload=qr_content)

@@ -126,6 +126,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/')
 ]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static') # Use in production if you want to use `./manage.py collectstatic`
 
 # Email settings
 EMAIL_USE_TLS = True
