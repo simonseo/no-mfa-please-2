@@ -13,10 +13,10 @@ jobs:
       - python/save-cache
       - run: pwd
       - run: ls
-      - run: cd mfa_mirror
+      - run: cd mfa_mirror && pwd
       - run: pwd
       - run:
-          command: ./manage.py test
+          command: ./mfa_mirror/manage.py test
           name: Test
 
 workflows:
