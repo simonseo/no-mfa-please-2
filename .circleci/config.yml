@@ -11,7 +11,9 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
+      - run: pwd
       - run: cd mfa_mirror
+      - run: pwd
       - run:
           command: ./manage.py test
           name: Test
