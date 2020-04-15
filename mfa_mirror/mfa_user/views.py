@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from mfa_user.models import MFAUser
 from mfa_user.forms import LoginForm, RegisterForm, GenerateOtpForm
-from mfa_user.emails import create_confirmation_email, create_otp_generation_email
+from mfa_user.emails import send_confirmation_email, send_otp_generation_email
 from mfa_user.tokens import account_confirmation_token
 
 recursive_defaultdict = lambda: defaultdict(recursive_defaultdict)
@@ -34,8 +34,7 @@ def register(request: HttpRequest):
         if form.is_valid():
             domain = get_current_site(request).domain
             new_user = form.user
-            email = create_confirmation_email(domain, new_user)
-            email.send()
+            email = send_confirmation_email(domain, new_user)
             modal = {
                 'title': 'Registration Almost Complete!',
                 'body': 'We sent a confirmation email to your email address. Click the link in the email to complete the registration.',
@@ -80,11 +79,7 @@ def generate(request: HttpRequest):
         if form.is_valid():
             # send email with otp
             domain = get_current_site(request).domain
-            email = create_otp_generation_email(domain, form.user, form.otp_list)
-            email.content_subtype = "html"
-            email.send()
-            # TODO show popup saying otp was sent to email
-
+            email = send_otp_generation_email(domain, form.user, form.otp_list)
             modal = {
                 'title': 'Passcodes Generated',
                 'body': 'Check your inbox! We sent the passcodes to your email. \

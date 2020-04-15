@@ -134,3 +134,6 @@ dmypy.json
 share/
 test.ipynb
 etc/
+
+# SSH Key
+*.pem
