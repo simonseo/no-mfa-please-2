@@ -47,6 +47,7 @@ share/python-wheels/
 MANIFEST
 
 # Virtualenv related
+venv/
 bin/
 include/
 pip-selfcheck.json
@@ -134,3 +135,10 @@ dmypy.json
 share/
 test.ipynb
 etc/
+
+# Production Server
+**/settings.production.py
+
+
+
+**/static_generated/
