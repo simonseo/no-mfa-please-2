@@ -2,13 +2,14 @@ from .base import *
 
 DEBUG = False
 ALLOWED_HOSTS = [
-    'http://ec2-34-219-167-204.us-west-2.compute.amazonaws.com/', # remove this later
-    'http://duo-mfa.online',
-    'https://duo-mfa.online',
+    '.ec2-34-219-167-204.us-west-2.compute.amazonaws.com', # remove this later
+    '.duo-mfa.online',
     ]
-
 TIME_ZONE = 'Asia/Dubai'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static/')
+]
 # Use in production if you want to use `./manage.py collectstatic`
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_generated') 
 

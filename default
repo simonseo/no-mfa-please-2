@@ -21,6 +21,6 @@ server {
 
         location /static/ {
                 autoindex on;
-                alias ~/no-mfa-please-2/mfa_mirror/static/;
+                alias /home/ubuntu/no-mfa-please-2/mfa_mirror/static_generated/;
         }
 }
