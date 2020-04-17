@@ -136,7 +136,9 @@ share/
 test.ipynb
 etc/
 
-# Production Server
+# SSH Key
 *.pem
+
+# Production Server
 **/settings.production.py
 **/static_generated/
