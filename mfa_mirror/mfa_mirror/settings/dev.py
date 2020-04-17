@@ -7,3 +7,6 @@ TIME_ZONE = 'Asia/Seoul'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/')
 ]
+
+
+
