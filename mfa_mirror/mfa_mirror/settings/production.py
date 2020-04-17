@@ -2,8 +2,8 @@ from .base import *
 
 DEBUG = False
 ALLOWED_HOSTS = [
-    '.ec2-34-219-167-204.us-west-2.compute.amazonaws.com', # remove this later
-    '.duo-mfa.online',
+        '.compute.amazonaws.com',
+        '.duo-mfa.online',
     ]
 TIME_ZONE = 'Asia/Dubai'
 
