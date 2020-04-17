@@ -11,12 +11,9 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run: pwd
-      - run: ls
       - run: cd mfa_mirror && pwd
-      - run: pwd
       - run:
-          command: ./mfa_mirror/manage.py test
+          command: ./mfa_mirror/manage.py test --settings=mfa_mirror.settings.ci
           name: Test
 
 workflows:

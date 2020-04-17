@@ -6,5 +6,12 @@ from mfa_user.models import MFAUser
 class MFAUserAdmin(admin.ModelAdmin):
     '''Admin View for MFAUser'''
 
-    list_display = ('email','password','hotp_secret','hotp_count','is_confirmed', 'register_dttm')
+    list_display = (
+        'email',
+        'is_confirmed',
+        'hotp_count', 
+        'register_dttm', 
+        'password',
+        'hotp_secret',
+        )
     # list_filter = ('password',)

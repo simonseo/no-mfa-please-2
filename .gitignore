@@ -47,6 +47,7 @@ share/python-wheels/
 MANIFEST
 
 # Virtualenv related
+venv/
 bin/
 include/
 pip-selfcheck.json
@@ -137,3 +138,7 @@ etc/
 
 # SSH Key
 *.pem
+
+# Production Server
+**/settings.production.py
+**/static_generated/
