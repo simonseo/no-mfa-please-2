@@ -1,7 +1,7 @@
 # Created by https://www.gitignore.io/
 
 ### VisualStudioCode ###
-.vscode/*
+**/.vscode/*
 
 ### Django ###
 *.log
