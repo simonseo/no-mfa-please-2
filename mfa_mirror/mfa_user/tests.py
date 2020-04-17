@@ -10,6 +10,7 @@ class EmailTestCase(TestCase):
 
     def test_confirmation_email_content(self):
         """Confirmation email is correctly drafted"""
+        pass
         # user = MFAUser(email='simonseo.doubles@gmail.com', password='asdf')
         # message = send_confirmation_email('naver.com', user)
         # expected = '\nWelcome,\n\nPlease click on the link below to confirm your registration.\n\nhttps://naver.com/user/confirm/Tm9uZQ/5fk-fc7556eee5a36359ec16/\n\n'
@@ -18,6 +19,7 @@ class EmailTestCase(TestCase):
         # self.assertNotEqual(expected[103:], message.body[103:])
 
     def test_send_email(self):
+        pass
         # mail.send_mail('Subject here', 'Here is the message.',
         #     'from@example.com', ['to@example.com'],
         #     fail_silently=False)

@@ -24,10 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ./manage.py shell -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -123,18 +120,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static/')
-# ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_generated') # Use in production if you want to use `./manage.py collectstatic`
 
 # Email settings
 MAILGUN_API_KEY=os.getenv('MAILGUN_API_KEY')
 EMAIL_DOMAIN_NAME=os.getenv('EMAIL_DOMAIN_NAME')
 
-# Session protection from man-in-the-middle or XSS attacks
-# explanation: https://stackoverflow.com/a/28072319/6501783
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# SESSION_COOKIE_HTTPONLY = True
-# SECURE_SSL_REDIRECT = True
