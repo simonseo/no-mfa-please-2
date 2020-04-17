@@ -28,6 +28,9 @@ class RegisterForm(forms.Form):
         'message': 'Click "Email me an activation link instead." OR scan the QR code with your smartphone camera app.',
         'url': '#'
     })
+    hotp_secret = forms.CharField(label='HOTP Secret', required=False, help_text={
+        'placeholder': 'abcdefg12345',
+    })
     # qr_image = forms.FileField(label='QR Code Image', allow_empty_file=False, required=False)
     submit_button_label = 'Register'
 
@@ -95,6 +98,18 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError('Failed to activate Duo MFA using the given value.')
         return qr_content
 
+    def clean_hotp_secret(self):
+        hotp_secret:str = self.cleaned_data.get('hotp_secret')
+        
+        if not hotp_secret:
+            return hotp_secret
+
+        if not all([c in '0123456789abcdef' for c in hotp_secret.lower()]) or len(hotp_secret) != 32:
+            raise forms.ValidationError('Wrong HOTP Secret format. Should look like 9e921a009250b0d3ebf3f43312246e1f')
+        
+        self.hotp_secret = hotp_secret
+        return hotp_secret
+
     def clean(self):
         '''Validate RegisterForm'''
         super().clean()
@@ -104,13 +119,14 @@ class RegisterForm(forms.Form):
         re_password = self.cleaned_data.get('re_password')
         qr_url = self.cleaned_data.get('qr_url')
         qr_content = self.cleaned_data.get('qr_content')
-
-        if not qr_url and not qr_content:
-            for field in 'qr_url', 'qr_content':
-                self.add_error(field, forms.ValidationError('Either provide a proper URL of QR code or Activation Code.'))
-            return
+        hotp_secret:str = self.cleaned_data.get('hotp_secret')
 
         if self.errors:
+            return
+
+        if not (qr_url or qr_content or hotp_secret):
+            for field in 'qr_url', 'qr_content', 'hotp_secrets':
+                self.add_error(field, forms.ValidationError('Provide provide at least one of these.'))
             return
 
         # TODO Move the below functionality to a separate module
@@ -120,7 +136,7 @@ class RegisterForm(forms.Form):
         new_user = MFAUser(email=email, password=make_password(
             password), hotp_secret=encrypted_secret) #, is_confirmed=False)
         if settings.DEBUG:
-            print(email, password, re_password, qr_url, qr_content)
+            print(email, password, re_password, qr_url, qr_content, hotp_secret)
         new_user.save()
         self.user = new_user
 

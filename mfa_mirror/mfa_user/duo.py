@@ -8,7 +8,9 @@ from os.path import dirname, join, abspath
 from os import getenv
 from urllib import parse
 from django.conf import settings
-
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import hashlib
 
 def _get_payload(qr_url):
 	# URL originally looks like https://api-e4c9863e.duosecurity.com/frame/qr?value=UQ1zdmSrJ9RTjuAGOymc-YXBpLWU0Yzk4NjNlLmR1b3NlY3VyaXR5LmNvbQ
@@ -88,19 +90,33 @@ def generate_hotp(hotp_secret, current_at=0, n=1):
 	passcode_list = [hotp.at(current_at + i) for i in range(n)]
 	return passcode_list
 
-def encrypt(plain_message: str, key1: str, key2: str) -> str:
-	'''Symmetric encryption of message using two keys. 
+def encrypt(plain_message: str, key1: str, key2: str) -> bytes:
+	'''A simple symmetric encryption of message using two keys. 
 	These keys should be stored in different ways.
 	For example, key1 could be a user\'s unhashed password which is only available to the server for a brief moment
 	while key2 could be a random string stored in the server but not version-controlled'''
 	# TODO Use real encryption
-	return plain_message + key1 + key2
+	key = hashlib.new('sha256', (key1+key2).encode('utf-8')).digest()
+	data = plain_message.encode('utf-8') + get_random_bytes(16)
+	cipher = AES.new(key, AES.MODE_EAX)
+	ciphertext, tag = cipher.encrypt_and_digest(data)
+	if settings.DEBUG:
+		print(f"nonce={cipher.nonce}, tag={tag}, ciphertext={ciphertext}")
+	encrypted_message = cipher.nonce + tag + ciphertext
+	return encrypted_message
 
 
-def decrypt(encrypted_message: str, key1: str, key2: str) -> str:
+def decrypt(encrypted_message: bytes, key1: str, key2: str) -> str:
 	'''Symmetric decryption of an encrypted message using two keys.
 	See also: encrypt'''
-	# TODO Use real encryption
-	return encrypted_message.replace(key1, '').replace(key2, '')
+	key = hashlib.new('sha256', (key1+key2).encode('utf-8')).digest()
+	nonce = encrypted_message[:16]
+	tag = encrypted_message[16:32]
+	ciphertext = encrypted_message[32:]
+	cipher = AES.new(key, AES.MODE_EAX, nonce)
+	plain_message = cipher.decrypt(ciphertext)[:-16].decode()
+	if settings.DEBUG:
+		print(f"plain_message={plain_message}")
+	return plain_message
 
 	
