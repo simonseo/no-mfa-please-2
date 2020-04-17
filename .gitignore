@@ -137,8 +137,6 @@ test.ipynb
 etc/
 
 # Production Server
+*.pem
 **/settings.production.py
-
-
-
 **/static_generated/
