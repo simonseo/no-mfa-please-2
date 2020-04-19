@@ -19,6 +19,6 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
 os.environ['HTTPS'] = 'on'
 os.environ['wsgi.url_scheme'] = 'https'

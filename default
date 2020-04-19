@@ -4,8 +4,8 @@ upstream django {
 }
 
 server {
-        listen 80;
         proxy_set_header X-Forwarded-Proto $scheme;
+        server_name duo-mfa.online;
 
         # gunicorn
         location / {
@@ -23,4 +23,25 @@ server {
                 autoindex on;
                 alias /home/ubuntu/no-mfa-please-2/mfa_mirror/static_generated/;
         }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/duo-mfa.online/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/duo-mfa.online/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+server {
+    if ($host = duo-mfa.online) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        server_name duo-mfa.online;
+    return 404; # managed by Certbot
+
+
 }
