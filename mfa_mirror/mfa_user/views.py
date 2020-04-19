@@ -14,11 +14,12 @@ from mfa_user.tokens import account_confirmation_token
 recursive_defaultdict = lambda: defaultdict(recursive_defaultdict)
 
 def home(request: HttpRequest):
-    user_id = request.session.get('user_id')
-    if user_id:
-        mfa_user = MFAUser.objects.get(pk=user_id)
-        return HttpResponse(mfa_user.email) 
-    return HttpResponse("home page")
+    return redirect(reverse(get_started))
+    # user_id = request.session.get('user_id')
+    # if user_id:
+    #     mfa_user = MFAUser.objects.get(pk=user_id)
+    #     return HttpResponse(mfa_user.email) 
+    # return HttpResponse("home page")
 
 def get_started(request: HttpRequest):
     return render(request, 'pages/get-started.html')
@@ -54,7 +55,6 @@ def register(request: HttpRequest):
                 }
             return render(request, 'pages/register.html', {'form': form, 'modal': modal})
         return render(request, 'pages/register.html', {'form': form})
-
 
 
 def login(request: HttpRequest):
