@@ -1,28 +1,27 @@
 upstream django {
-        server 127.0.0.1:8000;
-
+    server 127.0.0.1:8000;
 }
 
 server {
-        proxy_set_header X-Forwarded-Proto $scheme;
-        server_name duo-mfa.online;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    server_name duo-mfa.online;
 
-        # gunicorn
-        location / {
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Url-Scheme $scheme;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header Host $http_host;
+    # gunicorn
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Url-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $http_host;
 
-                proxy_redirect off;
-                proxy_pass http://django;
-        }
+        proxy_redirect off;
+        proxy_pass http://django;
+    }
 
 
-        location /static/ {
-                autoindex on;
-                alias /home/ubuntu/no-mfa-please-2/mfa_mirror/static_generated/;
-        }
+    location /static/ {
+        autoindex on;
+        alias /home/ubuntu/no-mfa-please-2/mfa_mirror/static_generated/;
+    }
 
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/duo-mfa.online/fullchain.pem; # managed by Certbot
@@ -34,14 +33,13 @@ server {
 
 
 server {
+    # managed by Certbot
     if ($host = duo-mfa.online) {
         return 301 https://$host$request_uri;
-    } # managed by Certbot
+    }
 
 
-        listen 80;
-        server_name duo-mfa.online;
+    listen 80;
+    server_name duo-mfa.online;
     return 404; # managed by Certbot
-
-
 }
