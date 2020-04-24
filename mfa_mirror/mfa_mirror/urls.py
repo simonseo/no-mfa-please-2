@@ -15,13 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from mfa_user.views import home, get_started
+from mfa_user.views import Home, GetStarted
 
 # if route string is empty like below, it adds urls to the root
 # path('', include('mfa_user.urls')), 
 urlpatterns = [
-    path('', home),
+    path('', Home.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('user/', include('mfa_user.urls')),
-    path('get-started/', get_started),
+    path('get-started/', GetStarted.as_view(), name='get-started'),
 ]
