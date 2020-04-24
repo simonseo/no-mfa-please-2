@@ -18,7 +18,7 @@ from django.urls import path, include
 from mfa_user.views import Home, GetStarted
 
 # if route string is empty like below, it adds urls to the root
-# path('', include('mfa_user.urls')), 
+# path('', include('mfa_user.urls')),
 urlpatterns = [
     path('', Home.as_view(), name='home'),
     path('admin/', admin.site.urls),

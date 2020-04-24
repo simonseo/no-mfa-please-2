@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.core import mail
 
 from mfa_user.models import MFAUser
-from mfa_user.emails import send_confirmation_email 
+from mfa_user.emails import send_confirmation_email
+
 
 class EmailTestCase(TestCase):
     def setUp(self):
@@ -14,7 +15,7 @@ class EmailTestCase(TestCase):
         # user = MFAUser(email='simonseo.doubles@gmail.com', password='asdf')
         # message = send_confirmation_email('naver.com', user)
         # expected = '\nWelcome,\n\nPlease click on the link below to confirm your registration.\n\nhttps://naver.com/user/confirm/Tm9uZQ/5fk-fc7556eee5a36359ec16/\n\n'
-        
+
         # self.assertEqual(expected[:103], message.body[:103])
         # self.assertNotEqual(expected[103:], message.body[103:])
 

@@ -9,11 +9,13 @@ from django.views import View
 from collections import defaultdict
 
 from mfa_user.emails import send_confirmation_email, send_otp_generation_email
-from mfa_user.forms import LoginForm, RegisterForm, GenerateOtpForm
+from mfa_user.forms import LoginForm, RegisterForm, OtpGenerationForm
 from mfa_user.models import MFAUser
 from mfa_user.tokens import account_confirmation_token
 
-recursive_defaultdict = lambda: defaultdict(recursive_defaultdict)
+
+def recursive_defaultdict(): return defaultdict(recursive_defaultdict)
+
 
 class Home(View):
     def get(self, request: HttpRequest):
@@ -21,13 +23,15 @@ class Home(View):
         # user_id = request.session.get('user_id')
         # if user_id:
         #     mfa_user = MFAUser.objects.get(pk=user_id)
-        #     return HttpResponse(mfa_user.email) 
+        #     return HttpResponse(mfa_user.email)
         # return HttpResponse("home page")
+
 
 class GetStarted(View):
     def get(self, request: HttpRequest):
         # view logic
         return render(request, 'pages/get-started.html')
+
 
 class Register(View):
     def get(self, request: HttpRequest):
@@ -60,6 +64,7 @@ class Register(View):
             return render(request, 'pages/register.html', {'form': form, 'modal': modal})
         return render(request, 'pages/register.html', {'form': form})
 
+
 class Login(View):
     def get(self, request: HttpRequest):
         user_id = request.session.get('user_id')
@@ -67,34 +72,37 @@ class Login(View):
             return redirect('/')
         else:
             form = LoginForm()
-            return render(request, 'pages/login.html', {'form':form})
+            return render(request, 'pages/login.html', {'form': form})
 
     def post(self, request: HttpRequest):
         form = LoginForm(request.POST)
         if form.is_valid():
             # TODO it's kinda weird that the form gives user_id. change it.
-            request.session['user_id'] = form.user_id 
+            request.session['user_id'] = form.user_id
             return redirect('/')
         else:
-            return render(request, 'pages/login.html', {'form':form})
+            return render(request, 'pages/login.html', {'form': form})
+
 
 class Logout(View):
     def get(self, request: HttpRequest):
         del request.session['user_id']
         return redirect('/')
 
+
 class Generate(View):
     def get(self, request: HttpRequest):
-        form = GenerateOtpForm()
-        return render(request, 'pages/generate.html', {'form':form})
+        form = OtpGenerationForm()
+        return render(request, 'pages/generate.html', {'form': form})
 
     def post(self, request: HttpRequest):
-        form = GenerateOtpForm(request.POST)
+        form = OtpGenerationForm(request.POST)
         if form.is_valid():
             # send email with otp
             domain = get_current_site(request).domain
             try:
-                email = send_otp_generation_email(domain, form.user, form.otp_list)
+                email = send_otp_generation_email(
+                    domain, form.user, form.otp_list)
             except Exception as e:
                 if settings.DEBUG:
                     print('Exception while sending otp generation email', e)
@@ -110,9 +118,10 @@ class Generate(View):
                             Make sure to check the spam folder if the email doesn\'t arrive within a few minutes.',
                     'fade': False,
                 }
-            return render(request, 'pages/generate.html', {'form':GenerateOtpForm(), 'modal':modal})
+            return render(request, 'pages/generate.html', {'form': OtpGenerationForm(), 'modal': modal})
         else:
-            return render(request, 'pages/generate.html', {'form':form})
+            return render(request, 'pages/generate.html', {'form': form})
+
 
 class Confirm(View):
     def get(self, request: HttpRequest, uidb64, token):

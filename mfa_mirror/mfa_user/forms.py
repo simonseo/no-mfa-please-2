@@ -78,8 +78,10 @@ class RegisterForm(forms.Form):
         except Exception as e:
             if settings.DEBUG:
                 print(e)
-                raise forms.ValidationError('Failed to activate Duo MFA from the QR code URL. {}'.format(e))
-            raise forms.ValidationError('Failed to activate Duo MFA from the QR code URL.')
+                raise forms.ValidationError(
+                    'Failed to activate Duo MFA from the QR code URL. {}'.format(e))
+            raise forms.ValidationError(
+                'Failed to activate Duo MFA from the QR code URL.')
         return qr_url
 
     def clean_qr_content(self):
@@ -94,19 +96,22 @@ class RegisterForm(forms.Form):
         except Exception as e:
             if settings.DEBUG:
                 print(e)
-                raise forms.ValidationError('Failed to activate Duo MFA using the given value. {}'.format(e))
-            raise forms.ValidationError('Failed to activate Duo MFA using the given value.')
+                raise forms.ValidationError(
+                    'Failed to activate Duo MFA using the given value. {}'.format(e))
+            raise forms.ValidationError(
+                'Failed to activate Duo MFA using the given value.')
         return qr_content
 
     def clean_hotp_secret(self):
-        hotp_secret:str = self.cleaned_data.get('hotp_secret')
-        
+        hotp_secret: str = self.cleaned_data.get('hotp_secret')
+
         if not hotp_secret:
             return hotp_secret
 
         if not all([c in '0123456789abcdef' for c in hotp_secret.lower()]) or len(hotp_secret) != 32:
-            raise forms.ValidationError('Wrong HOTP Secret format. Should look like 9e921a009250b0d3ebf3f43312246e1f')
-        
+            raise forms.ValidationError(
+                'Wrong HOTP Secret format. Should look like 9e921a009250b0d3ebf3f43312246e1f')
+
         self.hotp_secret = hotp_secret
         return hotp_secret
 
@@ -119,14 +124,15 @@ class RegisterForm(forms.Form):
         re_password = self.cleaned_data.get('re_password')
         qr_url = self.cleaned_data.get('qr_url')
         qr_content = self.cleaned_data.get('qr_content')
-        hotp_secret:str = self.cleaned_data.get('hotp_secret')
+        hotp_secret: str = self.cleaned_data.get('hotp_secret')
 
         if self.errors:
             return
 
         if not (qr_url or qr_content or hotp_secret):
             for field in 'qr_url', 'qr_content', 'hotp_secrets':
-                self.add_error(field, forms.ValidationError('Provide provide at least one of these.'))
+                self.add_error(field, forms.ValidationError(
+                    'Provide provide at least one of these.'))
             return
 
         # TODO Move the below functionality to a separate module
@@ -134,9 +140,10 @@ class RegisterForm(forms.Form):
             self.hotp_secret, password, settings.SECRET_KEY)
 
         new_user = MFAUser(email=email, password=make_password(
-            password), hotp_secret=encrypted_secret) #, is_confirmed=False)
+            password), hotp_secret=encrypted_secret)  # , is_confirmed=False)
         if settings.DEBUG:
-            print(email, password, re_password, qr_url, qr_content, hotp_secret)
+            print(email, password, re_password,
+                  qr_url, qr_content, hotp_secret)
         new_user.save()
         self.user = new_user
 
@@ -200,8 +207,8 @@ class LoginForm(forms.Form):
                 self.user_id = mfa_user.id
 
 
-class GenerateOtpForm(forms.Form):
-    """GenerateOtpForm definition."""
+class OtpGenerationForm(forms.Form):
+    """OtpGenerationForm definition."""
 
     email = forms.EmailField(label="Email address", required=True, error_messages={
                              'required': 'Better give me your email!',
@@ -244,20 +251,23 @@ class GenerateOtpForm(forms.Form):
                 print('Wrong password Entered.')
             self.add_error('password', forms.ValidationError(
                 'Wrong password Entered.'))
-        
+
         # Confirmation check
         if not mfa_user.is_confirmed:
-            raise forms.ValidationError('Account is not confirmed yet. Check your inbox first.')
-        
+            raise forms.ValidationError(
+                'Account is not confirmed yet. Check your inbox first.')
+
         if self.errors:
             return
 
         # TODO Move following functionality to separate module
         # decrypt otp key using user password and server secret key
         # generate otp and increment counter
-        hotp_secret = duo.decrypt(mfa_user.hotp_secret, password, settings.SECRET_KEY)
+        hotp_secret = duo.decrypt(
+            mfa_user.hotp_secret, password, settings.SECRET_KEY)
         n = 1
-        otp_list = duo.generate_hotp(hotp_secret, current_at=mfa_user.hotp_count, n=n)
+        otp_list = duo.generate_hotp(
+            hotp_secret, current_at=mfa_user.hotp_count, n=n)
         mfa_user.hotp_count += n
         mfa_user.save()
         self.user = mfa_user
