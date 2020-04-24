@@ -7,6 +7,7 @@ import requests
 import html2text
 
 from mfa_user.tokens import account_confirmation_token
+from mfa_user.models import MFAUser
 
 h = html2text.HTML2Text()
 
@@ -27,7 +28,7 @@ def send_simple_message(mail_subject:str, message:str, from_email:str, to_emails
               "html": message,
               "text": h.handle(message)})
 
-def send_confirmation_email(domain, user):
+def send_confirmation_email(domain: str, user: MFAUser):
     mail_subject = 'Confirm your account on Duo MFA Online Mirror.'
     message = render_to_string('emails/account-confirmation-email.html', {
         'domain': domain,
@@ -42,7 +43,7 @@ def send_confirmation_email(domain, user):
     return send_simple_message(mail_subject, message, from_email, [to_email])
 
 
-def send_otp_generation_email(domain, user, otp_list):
+def send_otp_generation_email(domain: str, user: MFAUser, otp_list: list):
     mail_subject = 'Your MFA Passcodes'
     message = render_to_string('emails/otp-generation-email.html', {
         'otp_list': otp_list,
