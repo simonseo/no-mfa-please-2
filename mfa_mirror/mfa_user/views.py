@@ -5,6 +5,8 @@ from django.shortcuts import render, redirect, reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
+from django.views.generic.edit import FormView
+
 
 from collections import defaultdict
 
@@ -34,13 +36,16 @@ class GetStarted(View):
 
 
 class Register(View):
+    form_class = RegisterForm
+    template_name = 'pages/register.html'
+
     def get(self, request: HttpRequest):
-        form = RegisterForm()
+        form = self.form_class()
         # TODO Allow three types of input: QR URL, Content of QR Code, QR Code image (which might be downloaded or photographed)
-        return render(request, 'pages/register.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request: HttpRequest):
-        form = RegisterForm(request.POST)
+        form = self.form_class(request.POST)
         if form.is_valid():
             domain = get_current_site(request).domain
             new_user = form.user
@@ -61,27 +66,30 @@ class Register(View):
                     'body': 'We sent a confirmation email to your email address. Follow the instructions in the email to complete the registration. Make sure to check the spam folder if the email doesn\'t arrive within a few minutes.',
                     'fade': False,
                 }
-            return render(request, 'pages/register.html', {'form': form, 'modal': modal})
-        return render(request, 'pages/register.html', {'form': form})
+            return render(request, self.template_name, {'form': form, 'modal': modal})
+        return render(request, self.template_name, {'form': form})
 
 
 class Login(View):
+    form_class = LoginForm
+    template_name = 'pages/login.html'
+
     def get(self, request: HttpRequest):
         user_id = request.session.get('user_id')
         if user_id:
             return redirect('/')
         else:
-            form = LoginForm()
-            return render(request, 'pages/login.html', {'form': form})
+            form = self.form_class()
+            return render(request, self.template_name, {'form': form})
 
     def post(self, request: HttpRequest):
-        form = LoginForm(request.POST)
+        form = self.form_class(request.POST)
         if form.is_valid():
             # TODO it's kinda weird that the form gives user_id. change it.
             request.session['user_id'] = form.user_id
             return redirect('/')
         else:
-            return render(request, 'pages/login.html', {'form': form})
+            return render(request, self.template_name, {'form': form})
 
 
 class Logout(View):
@@ -91,12 +99,14 @@ class Logout(View):
 
 
 class Generate(View):
+    form_class = OtpGenerationForm
+    template_name = 'pages/generate.html'
     def get(self, request: HttpRequest):
-        form = OtpGenerationForm()
-        return render(request, 'pages/generate.html', {'form': form})
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request: HttpRequest):
-        form = OtpGenerationForm(request.POST)
+        form = self.form_class(request.POST)
         if form.is_valid():
             # send email with otp
             domain = get_current_site(request).domain
@@ -118,9 +128,9 @@ class Generate(View):
                             Make sure to check the spam folder if the email doesn\'t arrive within a few minutes.',
                     'fade': False,
                 }
-            return render(request, 'pages/generate.html', {'form': OtpGenerationForm(), 'modal': modal})
+            return render(request, self.template_name, {'form': self.form_class(), 'modal': modal})
         else:
-            return render(request, 'pages/generate.html', {'form': form})
+            return render(request, self.template_name, {'form': form})
 
 
 class Confirm(View):
