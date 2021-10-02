@@ -1,9 +1,9 @@
-asgiref==3.2.5
+asgiref==3.2.10
 astroid==2.3.3
 autopep8==1.5
 certifi==2020.4.5.1
 chardet==3.0.4
-Django==3.1.12
+Django==3.1.13
 gunicorn==20.0.4
 html2text==2020.1.16
 idna==2.9
@@ -19,5 +19,5 @@ requests==2.23.0
 six==1.14.0
 sqlparse==0.3.1
 typed-ast==1.4.1
-urllib3==1.26.5
+urllib3==1.25.2
 wrapt==1.11.2
